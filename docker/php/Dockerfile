@@ -1,8 +1,17 @@
-FROM php:8.2-fpm
+FROM php:8.2-apache
 
 # Arguments defined in docker-compose.yml
 ARG user
 ARG uid
+
+RUN apt-get update -qq \
+  && apt-get install wget mariadb-client -yq
+
+RUN a2enmod rewrite
+
+ADD vhost.conf /etc/apache2/sites-available/000-default.conf
+
+RUN a2ensite 000-default
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y gnupg2 && apt-get install -y curl \

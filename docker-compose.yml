@@ -1,6 +1,5 @@
 version: "3.7"
 services:
-
   app:
     build:
       args:
@@ -8,9 +7,10 @@ services:
         uid: 1000
       context: ./docker/php
       dockerfile: Dockerfile
+    ports:
+      - 8080:80 
     image: laraveldocker
     container_name: laraveldocker-app
-    restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./:/var/www
@@ -24,7 +24,6 @@ services:
       MYSQL_PASSWORD: laraveldocker
       MYSQL_DATABASE: laraveldocker
       MYSQL_ROOT_PASSWORD: root
-    restart: always
     volumes:
       - ./docker/dbdata:/var/lib/mysql
     networks:
@@ -32,7 +31,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    restart: always
     ports:
       - 8081:80
     environment:
@@ -44,26 +42,10 @@ services:
       
   mailhog:
     image: mailhog/mailhog
-    restart: always
     ports:
       - 8025
     networks:
       - laraveldocker
-
-  nginx:
-    image: nginx:alpine
-    container_name: laraveldocker-nginx
-    restart: unless-stopped
-    depends_on:
-      - app
-    ports:
-      - 8080:80
-    volumes:
-      - ./:/var/www
-      - ./docker/nginx:/etc/nginx/conf.d/
-    networks:
-      - laraveldocker
-
 networks:
   laraveldocker:
     driver: bridge
